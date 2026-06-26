@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "QA automation framework for notification/alert management platform",
   "scripts": {
+    "lint": "eslint .",
     "test": "npx playwright test",
     "test --ui": "npx playwright test --ui",
     "test:ui": "npx playwright test --project=ui",
@@ -14,8 +15,12 @@
     "report:allure:generate": "npx allure generate allure-results -o allure-report"
   },
   "devDependencies": {
+    "@eslint/js": "^9.16.0",
     "@playwright/test": "^1.52.0",
     "@types/node": "^22.0.0",
-    "typescript": "^5.7.0"
+    "eslint": "^9.16.0",
+    "globals": "^15.11.0",
+    "typescript": "^5.7.0",
+    "typescript-eslint": "^8.15.0"
   }
 }
