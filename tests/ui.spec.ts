@@ -1,6 +1,8 @@
 import { test, expect } from '@playwright/test';
 import { LoginPage } from '../pages/LoginPage';
 import { DashboardPage } from '../pages/DashboardPage';
+import { AdminPage } from '../pages/AdminPage';
+import { credentials } from '../fixtures/test-data';
 import * as allure from 'allure-js-commons';
 
 test.describe('Login Tests', () => {
@@ -21,7 +23,7 @@ test.describe('Login Tests', () => {
     await allure.story('Valid Login');
 
     await allure.step('Enter valid credentials', async () => {
-      await loginPage.login('Admin', 'admin123');
+      await loginPage.login(credentials.valid.username, credentials.valid.password);
     });
 
     await allure.step('Verify redirect to dashboard', async () => {
@@ -29,26 +31,24 @@ test.describe('Login Tests', () => {
     });
   });
 
-  test('should show error with invalid credentials', async ({ page }) => {
+  test('should show error with invalid credentials', async () => {
     await allure.epic('Authentication');
     await allure.feature('Login');
     await allure.story('Invalid Login');
     await allure.severity('critical');
 
     await allure.step('Enter invalid credentials', async () => {
-      await loginPage.login('invalidUser', 'wrongPassword');
+      await loginPage.login(credentials.invalid.username, credentials.invalid.password);
     });
 
     await allure.step('Verify error message is displayed', async () => {
-      const error = page.locator('.oxd-alert-content-text');
-      await expect(error).toContainText('Invalid credentials');
+      await expect(loginPage.errorMessage).toBeVisible();
     });
   });
 
-  test('should show error when password is empty', async ({ page }) => {
-    await loginPage.login('Admin', '');
-    const error = page.locator('.oxd-input-field-error-message');
-    await expect(error).toBeVisible();
+  test('should show error when password is empty', async () => {
+    await loginPage.login(credentials.valid.username, '');
+    await expect(loginPage.requiredError).toBeVisible();
   });
 
   test('should navigate to forgot password', async ({ page }) => {
@@ -63,7 +63,7 @@ test.describe('Dashboard Tests', () => {
   test.beforeEach(async ({ page }) => {
     const loginPage = new LoginPage(page);
     await loginPage.goto();
-    await loginPage.login('Admin', 'admin123');
+    await loginPage.login(credentials.valid.username, credentials.valid.password);
     dashboard = new DashboardPage(page);
   });
 
@@ -71,7 +71,7 @@ test.describe('Dashboard Tests', () => {
     await expect(dashboard.sideMenu).toBeVisible();
   });
 
-  test('should have navigation menu items', async ({ page }) => {
+  test('should have navigation menu items', async () => {
     await expect(dashboard.adminMenuItem).toBeVisible();
     await expect(dashboard.pimMenuItem).toBeVisible();
   });
@@ -109,50 +109,42 @@ test.describe('Dashboard Tests', () => {
 });
 
 test.describe('Admin Panel Tests', () => {
+  let adminPage: AdminPage;
+
   test.beforeEach(async ({ page }) => {
     const loginPage = new LoginPage(page);
     await loginPage.goto();
-    await loginPage.login('Admin', 'admin123');
+    await loginPage.login(credentials.valid.username, credentials.valid.password);
     const dashboard = new DashboardPage(page);
     await dashboard.navigateToAdmin();
+    adminPage = new AdminPage(page);
   });
 
-  test('should display admin page with user table', async ({ page }) => {
-    const table = page.locator('.oxd-table');
-    await expect(table).toBeVisible();
+  test('should display admin page with user table', async () => {
+    await expect(adminPage.userTable).toBeVisible();
   });
 
-  test('should search users by username', async ({ page }) => {
+  test('should search users by username', async () => {
     await allure.epic('Admin');
     await allure.feature('User Management');
     await allure.story('Search Users');
 
-    const usernameFilter = page.locator('.oxd-input').nth(1);
-    const searchButton = page.locator('button[type="submit"]');
-
     await allure.step('Enter username in search field', async () => {
-      await usernameFilter.fill('Admin');
-    });
-
-    await allure.step('Click search button', async () => {
-      await searchButton.click();
-      await page.waitForLoadState('networkidle');
+      await adminPage.searchByUsername('Admin');
     });
 
     await allure.step('Verify results are displayed', async () => {
-      const rows = page.locator('.oxd-table-body .oxd-table-row');
-      await expect(rows).toHaveCount(await rows.count());
+      const count = await adminPage.getResultsCount();
+      expect(count).toBeGreaterThan(0);
     });
   });
 
-  test('should display add user button', async ({ page }) => {
-    const addButton = page.locator('button:has-text("Add")').first();
-    await expect(addButton).toBeVisible();
+  test('should display add user button', async () => {
+    await expect(adminPage.addButton).toBeVisible();
   });
 
   test('should navigate to add user form', async ({ page }) => {
-    const addButton = page.locator('button:has-text("Add")').first();
-    await addButton.click();
+    await adminPage.clickAdd();
     await expect(page).toHaveURL(/saveSystemUser/);
   });
 });

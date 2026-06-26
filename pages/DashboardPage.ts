@@ -10,11 +10,11 @@ export class DashboardPage {
 
   constructor(page: Page) {
     this.page = page;
-    this.sideMenu = page.locator('.oxd-main-menu').first();
-    this.adminMenuItem = page.locator('a[href="/web/index.php/admin/viewAdminModule"]').first();
-    this.pimMenuItem = page.locator('a[href="/web/index.php/pim/viewPimModule"]').first();
-    this.userProfile = page.locator('.oxd-userdropdown');
-    this.logoutButton = page.locator('a:has-text("Logout")');
+    this.sideMenu = page.getByRole('navigation', { name: 'Sidepanel' });
+    this.adminMenuItem = page.getByRole('link', { name: 'Admin' });
+    this.pimMenuItem = page.getByRole('link', { name: 'PIM' });
+    this.userProfile = page.getByAltText(/profile/i).first();
+    this.logoutButton = page.getByRole('menuitem', { name: 'Logout' });
   }
 
   async navigateToAdmin() {

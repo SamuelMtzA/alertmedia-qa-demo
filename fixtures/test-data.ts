@@ -1,4 +1,15 @@
-export const credentials = {
+export interface Credentials {
+  username: string;
+  password: string;
+}
+
+export interface AlertPayload {
+  title: string;
+  body: string;
+  userId: number;
+}
+
+export const credentials: { valid: Credentials; invalid: Credentials } = {
   valid: {
     username: 'Admin',
     password: 'admin123',
@@ -9,7 +20,7 @@ export const credentials = {
   },
 };
 
-export const alertPayloads = {
+export const alertPayloads: { severeWeather: AlertPayload; officeClosure: AlertPayload } = {
   severeWeather: {
     title: 'Severe Weather Alert',
     body: 'Tornado warning in effect for Austin, TX area.',

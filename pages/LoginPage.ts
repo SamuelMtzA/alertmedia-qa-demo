@@ -6,24 +6,35 @@ export class LoginPage {
   readonly passwordInput: Locator;
   readonly loginButton: Locator;
   readonly forgotPasswordLink: Locator;
+  readonly errorMessage: Locator;
+  readonly requiredError: Locator;
 
   constructor(page: Page) {
     this.page = page;
-    this.usernameInput = page.locator('input[name="username"]');
-    this.passwordInput = page.locator('input[name="password"]');
-    this.loginButton = page.locator('button[type="submit"]');
-    this.forgotPasswordLink = page.locator('.orangehrm-login-forgot-header');
+    this.usernameInput = page.getByPlaceholder('Username');
+    this.passwordInput = page.getByPlaceholder('Password');
+    this.loginButton = page.getByRole('button', { name: 'Login' });
+    this.forgotPasswordLink = page.getByText('Forgot your password?');
+    this.errorMessage = page.locator('.oxd-alert-content-text');
+    this.requiredError = page.locator('.oxd-input-field-error-message');
   }
 
   async goto() {
     await this.page.goto('/web/index.php/auth/login');
     await this.page.waitForLoadState('domcontentloaded');
-    await this.page.waitForTimeout(2000);
   }
 
   async login(username: string, password: string) {
     await this.usernameInput.fill(username);
     await this.passwordInput.fill(password);
     await this.loginButton.click();
+  }
+
+  async isErrorVisible() {
+    return this.errorMessage.isVisible();
+  }
+
+  async isRequiredErrorVisible() {
+    return this.requiredError.isVisible();
   }
 }
