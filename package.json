@@ -3,23 +3,25 @@
   "version": "1.0.0",
   "description": "QA automation framework for notification/alert management platform",
   "scripts": {
-    "lint": "eslint .",
+    "lint": "eslint . && prettier --check .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "test": "npx playwright test",
     "test --ui": "npx playwright test --ui",
     "test:ui": "npx playwright test --project=ui",
     "test:api": "npx playwright test --project=api",
     "test:headed": "npx playwright test --headed",
     "test:debug": "npx playwright test --debug",
-    "report": "npx playwright show-report",
-    "report:allure": "npx allure serve allure-results",
-    "report:allure:generate": "npx allure generate allure-results -o allure-report"
+    "report": "npx playwright show-report"
   },
   "devDependencies": {
     "@eslint/js": "^9.16.0",
     "@playwright/test": "^1.52.0",
     "@types/node": "^22.0.0",
     "eslint": "^9.16.0",
+    "eslint-config-prettier": "^10.1.8",
     "globals": "^15.11.0",
+    "prettier": "^3.8.5",
     "typescript": "^5.7.0",
     "typescript-eslint": "^8.15.0"
   }

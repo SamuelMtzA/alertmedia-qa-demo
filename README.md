@@ -61,25 +61,28 @@ npm run report
 ## Test Results
 
 **26 tests passing** across 2 projects:
+
 - **UI**: 14 tests (login, dashboard, admin panel)
 - **API**: 12 tests (users CRUD, posts CRUD)
 
 ## Key Features Explained
 
 ### Semantic Locators
+
 Tests use Playwright's recommended semantic locators for resilience:
 
 ```typescript
 // Instead of CSS selectors
-page.locator('input[name="username"]')
+page.locator('input[name="username"]');
 
 // Use semantic locators
-page.getByPlaceholder('Username')
-page.getByRole('button', { name: 'Login' })
-page.getByText('Forgot your password?')
+page.getByPlaceholder('Username');
+page.getByRole('button', { name: 'Login' });
+page.getByText('Forgot your password?');
 ```
 
 ### Page Object Model
+
 Each page is a class with locators and methods:
 
 ```typescript
@@ -96,6 +99,7 @@ export class LoginPage {
 ```
 
 ### TypeScript Interfaces
+
 Test data is typed for safety:
 
 ```typescript
