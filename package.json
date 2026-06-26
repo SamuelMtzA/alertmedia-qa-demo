@@ -1,19 +1,22 @@
 {
   "name": "alertmedia-qa-demo",
   "version": "1.0.0",
-  "description": "QA automation framework for notification/alert management platform - UI, API, and hybrid testing",
+  "description": "QA automation framework for notification/alert management platform",
   "scripts": {
     "test": "npx playwright test",
-    "test:ui": "npx playwright test tests/ui/",
-    "test:api": "npx playwright test tests/api/",
-    "test:hybrid": "npx playwright test tests/hybrid/",
+    "test:ui": "npx playwright test --project=ui",
+    "test:api": "npx playwright test --project=api",
     "test:headed": "npx playwright test --headed",
     "test:debug": "npx playwright test --debug",
-    "report": "npx playwright show-report"
+    "report": "npx playwright show-report",
+    "report:allure": "npx allure serve allure-results",
+    "report:allure:generate": "npx allure generate allure-results -o allure-report"
   },
   "devDependencies": {
     "@playwright/test": "^1.52.0",
     "@types/node": "^22.0.0",
+    "allure-js-commons": "^3.10.1",
+    "allure-playwright": "^3.10.1",
     "typescript": "^5.7.0"
   }
 }

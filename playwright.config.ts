@@ -5,7 +5,11 @@ export default defineConfig({
   fullyParallel: true,
   retries: 0,
   workers: 3,
-  reporter: 'html',
+  reporter: [
+    ['list'],
+    ['html', { open: 'never' }],
+    ['allure-playwright'],
+  ],
 
   use: {
     trace: 'on-first-retry',

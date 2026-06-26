@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { LoginPage } from '../pages/LoginPage';
 import { DashboardPage } from '../pages/DashboardPage';
+import * as allure from 'allure-js-commons';
 
 test.describe('Login Tests', () => {
   let loginPage: LoginPage;
@@ -15,14 +16,33 @@ test.describe('Login Tests', () => {
   });
 
   test('should login with valid credentials', async ({ page }) => {
-    await loginPage.login('Admin', 'admin123');
-    await expect(page).toHaveURL(/dashboard/);
+    await allure.epic('Authentication');
+    await allure.feature('Login');
+    await allure.story('Valid Login');
+
+    await allure.step('Enter valid credentials', async () => {
+      await loginPage.login('Admin', 'admin123');
+    });
+
+    await allure.step('Verify redirect to dashboard', async () => {
+      await expect(page).toHaveURL(/dashboard/);
+    });
   });
 
   test('should show error with invalid credentials', async ({ page }) => {
-    await loginPage.login('invalidUser', 'wrongPassword');
-    const error = page.locator('.oxd-alert-content-text');
-    await expect(error).toContainText('Invalid credentials');
+    await allure.epic('Authentication');
+    await allure.feature('Login');
+    await allure.story('Invalid Login');
+    await allure.severity('critical');
+
+    await allure.step('Enter invalid credentials', async () => {
+      await loginPage.login('invalidUser', 'wrongPassword');
+    });
+
+    await allure.step('Verify error message is displayed', async () => {
+      const error = page.locator('.oxd-alert-content-text');
+      await expect(error).toContainText('Invalid credentials');
+    });
   });
 
   test('should show error when password is empty', async ({ page }) => {
@@ -57,8 +77,16 @@ test.describe('Dashboard Tests', () => {
   });
 
   test('should navigate to admin section', async ({ page }) => {
-    await dashboard.navigateToAdmin();
-    await expect(page).toHaveURL(/admin/);
+    await allure.epic('Navigation');
+    await allure.feature('Admin Panel');
+
+    await allure.step('Click on Admin menu item', async () => {
+      await dashboard.navigateToAdmin();
+    });
+
+    await allure.step('Verify URL contains /admin/', async () => {
+      await expect(page).toHaveURL(/admin/);
+    });
   });
 
   test('should navigate to PIM section', async ({ page }) => {
@@ -67,8 +95,16 @@ test.describe('Dashboard Tests', () => {
   });
 
   test('should logout successfully', async ({ page }) => {
-    await dashboard.logout();
-    await expect(page).toHaveURL(/login/);
+    await allure.epic('Authentication');
+    await allure.feature('Logout');
+
+    await allure.step('Click user profile and logout', async () => {
+      await dashboard.logout();
+    });
+
+    await allure.step('Verify redirect to login page', async () => {
+      await expect(page).toHaveURL(/login/);
+    });
   });
 });
 
@@ -87,15 +123,26 @@ test.describe('Admin Panel Tests', () => {
   });
 
   test('should search users by username', async ({ page }) => {
+    await allure.epic('Admin');
+    await allure.feature('User Management');
+    await allure.story('Search Users');
+
     const usernameFilter = page.locator('.oxd-input').nth(1);
     const searchButton = page.locator('button[type="submit"]');
 
-    await usernameFilter.fill('Admin');
-    await searchButton.click();
-    await page.waitForLoadState('networkidle');
+    await allure.step('Enter username in search field', async () => {
+      await usernameFilter.fill('Admin');
+    });
 
-    const rows = page.locator('.oxd-table-body .oxd-table-row');
-    await expect(rows).toHaveCount(await rows.count());
+    await allure.step('Click search button', async () => {
+      await searchButton.click();
+      await page.waitForLoadState('networkidle');
+    });
+
+    await allure.step('Verify results are displayed', async () => {
+      const rows = page.locator('.oxd-table-body .oxd-table-row');
+      await expect(rows).toHaveCount(await rows.count());
+    });
   });
 
   test('should display add user button', async ({ page }) => {

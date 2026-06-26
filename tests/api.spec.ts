@@ -1,12 +1,19 @@
 import { test, expect } from '@playwright/test';
+import * as allure from 'allure-js-commons';
 
 test.describe('Users API - CRUD Operations', () => {
   test('GET /users - should return list of users', async ({ request }) => {
-    const response = await request.get('/users');
-    expect(response.status()).toBe(200);
+    await allure.epic('API Testing');
+    await allure.feature('Users');
+    await allure.story('Get All Users');
 
-    const users = await response.json();
-    expect(users.length).toBe(10);
+    await allure.step('Send GET request to /users', async () => {
+      const response = await request.get('/users');
+      expect(response.status()).toBe(200);
+
+      const users = await response.json();
+      expect(users.length).toBe(10);
+    });
   });
 
   test('GET /users/1 - should return single user', async ({ request }) => {
@@ -30,19 +37,26 @@ test.describe('Users API - CRUD Operations', () => {
   });
 
   test('POST /posts - should create a new post', async ({ request }) => {
+    await allure.epic('API Testing');
+    await allure.feature('Posts');
+    await allure.story('Create Post');
+    await allure.severity('critical');
+
     const newPost = {
       title: 'Severe Weather Alert',
       body: 'Tornado warning in effect for Austin, TX area.',
       userId: 1,
     };
 
-    const response = await request.post('/posts', { data: newPost });
-    expect(response.status()).toBe(201);
+    await allure.step('Send POST request with new post data', async () => {
+      const response = await request.post('/posts', { data: newPost });
+      expect(response.status()).toBe(201);
 
-    const created = await response.json();
-    expect(created.title).toBe(newPost.title);
-    expect(created.body).toBe(newPost.body);
-    expect(created.id).toBeDefined();
+      const created = await response.json();
+      expect(created.title).toBe(newPost.title);
+      expect(created.body).toBe(newPost.body);
+      expect(created.id).toBeDefined();
+    });
   });
 
   test('PUT /posts/1 - should update existing post', async ({ request }) => {
