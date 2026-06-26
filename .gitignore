@@ -3,7 +3,5 @@ dist/
 playwright-report/
 test-results/
 screenshots/
-allure-results/
-allure-report/
 .env
 *.log

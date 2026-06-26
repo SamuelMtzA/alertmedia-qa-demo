@@ -2,21 +2,20 @@
 
 ## Overview
 
-A clean QA automation framework demonstrating **UI testing** and **API testing** with Playwright and TypeScript. Features **Allure reporting** and **automatic bug report generation**.
+A clean QA automation framework demonstrating **UI testing** and **API testing** with Playwright and TypeScript.
 
 ## Features
 
 - **Page Object Model**: Clean separation of UI logic
 - **API Testing**: REST endpoint validation
-- **Allure Reporting**: Rich, interactive test reports with step-by-step details
-- **TypeScript**: Type-safe code
+- **Semantic Locators**: Using `getByRole`, `getByPlaceholder`, `getByText` for resilient tests
+- **TypeScript**: Type-safe code with interfaces
 - **CI/CD**: GitHub Actions workflow
 
 ## Tech Stack
 
 - **Playwright** - Browser automation & API testing
 - **TypeScript** - Type-safe test code
-- **Allure** - Advanced test reporting
 - **GitHub Actions** - CI/CD pipeline
 
 ## Project Structure
@@ -25,13 +24,13 @@ A clean QA automation framework demonstrating **UI testing** and **API testing**
 alertmedia-qa-demo/
 ├── pages/
 │   ├── LoginPage.ts          # Login page object
-│   └── DashboardPage.ts      # Dashboard page object
+│   ├── DashboardPage.ts      # Dashboard page object
+│   └── AdminPage.ts          # Admin panel page object
 ├── tests/
 │   ├── ui.spec.ts            # UI tests (login, dashboard, admin)
 │   └── api.spec.ts           # API tests (CRUD operations)
 ├── fixtures/
-│   └── test-data.ts          # Test data
-├── allure-results/           # Allure test results
+│   └── test-data.ts          # Test data with TypeScript interfaces
 ├── playwright.config.ts      # Playwright config
 └── package.json
 ```
@@ -59,29 +58,6 @@ npm run test:headed
 npm run report
 ```
 
-## Viewing Reports
-
-### Allure Report (Recommended)
-Allure provides rich, interactive reports with test hierarchies, steps, and attachments:
-
-```bash
-# Generate and serve Allure report
-npm run report:allure
-
-# Or generate static report
-npm run report:allure:generate
-```
-
-**Note:** Allure requires Java to be installed. Download from [allure-framework/allure2](https://github.com/allure-framework/allure2/releases) or install via:
-- macOS: `brew install allure`
-- Windows: `scoop install allure`
-- Linux: Download from GitHub releases
-
-### Playwright HTML Report
-```bash
-npm run report
-```
-
 ## Test Results
 
 **26 tests passing** across 2 projects:
@@ -90,30 +66,55 @@ npm run report
 
 ## Key Features Explained
 
-### Allure Annotations
-Tests use `allure.step()`, `allure.epic()`, `allure.feature()`, and `allure.story()` to create hierarchical, readable test reports:
+### Semantic Locators
+Tests use Playwright's recommended semantic locators for resilience:
 
 ```typescript
-await allure.epic('Authentication');
-await allure.feature('Login');
-await allure.story('Valid Login');
+// Instead of CSS selectors
+page.locator('input[name="username"]')
 
-await allure.step('Enter valid credentials', async () => {
-  await loginPage.login('Admin', 'admin123');
-});
+// Use semantic locators
+page.getByPlaceholder('Username')
+page.getByRole('button', { name: 'Login' })
+page.getByText('Forgot your password?')
 ```
 
-### Automatic Bug Reports
-The custom `BugReporter` automatically generates detailed markdown bug reports when tests fail, including:
-- Test environment information
-- Extracted test steps
-- Error messages and stack traces
-- Suggested debugging actions
+### Page Object Model
+Each page is a class with locators and methods:
+
+```typescript
+export class LoginPage {
+  readonly usernameInput = page.getByPlaceholder('Username');
+  readonly loginButton = page.getByRole('button', { name: 'Login' });
+
+  async login(username: string, password: string) {
+    await this.usernameInput.fill(username);
+    await this.passwordInput.fill(password);
+    await this.loginButton.click();
+  }
+}
+```
+
+### TypeScript Interfaces
+Test data is typed for safety:
+
+```typescript
+export interface Credentials {
+  username: string;
+  password: string;
+}
+
+export interface AlertPayload {
+  title: string;
+  body: string;
+  userId: number;
+}
+```
 
 ## Interview Talking Points
 
-1. **Why Playwright?** - Auto-waiting, multi-browser, built-in API testing
+1. **Why Playwright?** - Auto-waiting, multi-browser, built-in API testing, semantic locators
 2. **Why Page Object Model?** - Maintainability, reusability, separation of concerns
-3. **Why Allure?** - Professional, interactive reports with test hierarchies and step details
+3. **Why Semantic Locators?** - More resilient than CSS, test the app like users interact with it
 4. **Test Strategy** - UI for user flows, API for data validation
 5. **CI/CD** - Automated on PR, HTML reports, artifact preservation
