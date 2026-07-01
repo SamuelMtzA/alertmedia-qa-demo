@@ -10,13 +10,21 @@
     "test --ui": "npx playwright test --ui",
     "test:ui": "npx playwright test --project=ui",
     "test:api": "npx playwright test --project=api",
+    "test:a11y": "npx playwright test --project=a11y",
+    "test:cms": "npx playwright test --project=cms",
     "test:headed": "npx playwright test --headed",
     "test:debug": "npx playwright test --debug",
-    "report": "npx playwright show-report"
+    "report": "npx playwright show-report",
+    "perf:smoke": "k6 run --scenario smoke_test performance/load-tests.ts",
+    "perf:average": "k6 run --scenario average_load performance/load-tests.ts",
+    "perf:stress": "k6 run --scenario stress_test performance/load-tests.ts",
+    "perf:all": "k6 run performance/load-tests.ts"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.12.1",
     "@eslint/js": "^9.16.0",
     "@playwright/test": "^1.52.0",
+    "@types/k6": "^2.0.0",
     "@types/node": "^22.0.0",
     "eslint": "^9.16.0",
     "eslint-config-prettier": "^10.1.8",

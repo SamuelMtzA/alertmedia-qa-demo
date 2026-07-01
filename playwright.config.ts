@@ -13,6 +13,8 @@ export default defineConfig({
     actionTimeout: 15000,
   },
 
+  timeout: 60000,
+
   projects: [
     {
       name: 'ui',
@@ -28,6 +30,22 @@ export default defineConfig({
         baseURL: 'https://jsonplaceholder.typicode.com',
       },
       testMatch: /api\.spec\.ts/,
+    },
+    {
+      name: 'a11y',
+      use: {
+        browserName: 'chromium',
+        baseURL: 'https://opensource-demo.orangehrmlive.com',
+      },
+      testMatch: /accessibility\.spec\.ts/,
+    },
+    {
+      name: 'cms',
+      use: {
+        browserName: 'chromium',
+        baseURL: 'https://demo.dotcms.com',
+      },
+      testMatch: /cms\.spec\.ts/,
     },
   ],
 });
