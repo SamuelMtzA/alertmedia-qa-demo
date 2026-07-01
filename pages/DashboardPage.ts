@@ -18,11 +18,13 @@ export class DashboardPage {
   }
 
   async navigateToAdmin() {
+    await this.adminMenuItem.waitFor({ state: 'visible', timeout: 10000 });
     await this.adminMenuItem.click();
     await this.page.waitForLoadState('networkidle');
   }
 
   async navigateToPIM() {
+    await this.pimMenuItem.waitFor({ state: 'visible', timeout: 10000 });
     await this.pimMenuItem.click();
     await this.page.waitForLoadState('networkidle');
   }

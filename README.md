@@ -132,7 +132,7 @@ const results = await new AxeBuilder({ page })
   .analyze();
 
 // Log violations with impact levels
-results.violations.forEach(v => {
+results.violations.forEach((v) => {
   console.log(`${v.id}: ${v.impact} - ${v.description}`);
 });
 ```
@@ -184,6 +184,7 @@ export const options = {
 ## Study Guide
 
 See [STUDY_GUIDE.md](./STUDY_GUIDE.md) for comprehensive interview preparation including:
+
 - Code walkthrough script
 - Technical deep-dives (performance, accessibility, CMS)
 - 25+ interview questions with detailed answers

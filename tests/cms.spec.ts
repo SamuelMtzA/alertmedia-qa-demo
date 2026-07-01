@@ -144,7 +144,9 @@ test.describe('CMS Admin Console - DotCMS', () => {
       await loginButton.click();
       await page.waitForLoadState('networkidle');
 
-      const adminContent = page.locator('[class*="content"], [class*="dashboard"], [id*="app"]').first();
+      const adminContent = page
+        .locator('[class*="content"], [class*="dashboard"], [id*="app"]')
+        .first();
       await expect(adminContent).toBeVisible({ timeout: 10000 });
     }
   });

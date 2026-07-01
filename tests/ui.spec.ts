@@ -18,6 +18,7 @@ test.describe('Login Tests', () => {
 
   test('should login with valid credentials', async ({ page }) => {
     await loginPage.login(credentials.valid.username, credentials.valid.password);
+    await page.waitForTimeout(2000);
     await expect(page).toHaveURL(/dashboard/);
   });
 
@@ -52,6 +53,7 @@ test.describe('Dashboard Tests', () => {
   });
 
   test('should have navigation menu items', async () => {
+    await dashboard.sideMenu.waitFor({ state: 'visible', timeout: 10000 });
     await expect(dashboard.adminMenuItem).toBeVisible();
     await expect(dashboard.pimMenuItem).toBeVisible();
   });
