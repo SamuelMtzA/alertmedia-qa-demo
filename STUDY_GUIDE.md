@@ -18,52 +18,63 @@
 ### File Order to Present
 
 #### 1. `playwright.config.ts` (5 min)
+
 - **Projects array (lines 16-40):** "I organized tests into 4 projects: UI, API, Accessibility, and CMS. Each has its own `baseURL` and uses `testMatch` regex to run only relevant tests. This separation allows teams to run specific test suites independently."
 - **Reporter (lines 8-12):** "Two reporters: `list` for console output and `html` for Playwright's built-in interactive report with screenshots and traces."
 - **Timeout config (lines 14-15):** "I set a 60-second timeout to handle slower demo sites, and 15-second action timeout for individual interactions."
 
 #### 2. `fixtures/test-data.ts` (3 min)
+
 - "I centralize all test data here with TypeScript interfaces. `Credentials` and `AlertPayload` are typed interfaces. This means if test data changes, I update one file, not 45 tests."
 - "The alert payloads use realistic notification scenarios: severe weather alerts, office closures."
 
 #### 3. `pages/LoginPage.ts` (5 min)
+
 - **Semantic locators (lines 14-17):** "I use Playwright's recommended semantic locators: `getByPlaceholder`, `getByRole`, `getByText`. These are more resilient than CSS selectors because they test the app the way a user interacts with it."
 - **login() method (lines 27-31):** "This encapsulates the entire login flow. Tests call `loginPage.login('Admin', 'admin123')` instead of repeating 3 lines of fill/click."
 
 #### 4. `pages/ContentPage.ts` (5 min)
+
 - "This page object is for CMS testing with DotCMS. It defines locators for dynamic content sections: navigation, hero section, activity cards, product cards, event cards, blog posts, and contact form."
 - "The methods like `getActivityCount()` and `navigateToSection()` abstract CMS-specific interactions."
 
 #### 5. `tests/ui.spec.ts` (10 min)
+
 - **Login tests (lines 7-38):** "Each `beforeEach` sets up the page object. Tests are descriptive: 'should login with valid credentials', 'should show error with invalid credentials'."
 - **Admin tests (lines 75-105):** "The `beforeEach` handles login + navigation to admin, so each test starts at the right state."
 
 #### 6. `tests/api.spec.ts` (10 min)
+
 - **TypeScript interfaces (lines 4-16):** "I define `Post` and `User` interfaces for type safety. No `any` types."
 - **POST test (lines 47-55):** "This creates an alert using `alertPayloads.severeWeather` from fixtures. I validate status code 201, response body, and that an ID was generated."
 - **404 test (lines 118-121):** "I test negative cases too. Requesting a non-existent resource should return 404."
 
 #### 7. `tests/accessibility.spec.ts` (10 min)
+
 - **axe-core integration (lines 1-2):** "I use `@axe-core/playwright` for automated accessibility testing. This scans pages for WCAG 2.2 AA violations."
 - **Keyboard navigation test (lines 5-22):** "This validates that form fields can be navigated using only the keyboard, which is critical for users with motor disabilities."
 - **Dashboard scan (lines 39-77):** "After login, I run a full accessibility scan. The test logs violations with their impact level (critical, serious, moderate, minor). This is what I'd report to developers."
 - **Real findings:** "The scan found 6 violations including missing lang attribute, color contrast issues, and buttons without discernible text. These are real issues I'd file as bugs."
 
 #### 8. `tests/cms.spec.ts` (10 min)
+
 - **DotCMS demo site (lines 1-10):** "I test against a live DotCMS instance at demo.dotcms.com. This is a real CMS platform with dynamic content."
 - **Content validation (lines 12-26):** "I verify that dynamic content sections load: activities, products, events, blog posts. These are all CMS-driven."
 - **Navigation test (lines 28-37):** "I validate that CMS-driven navigation contains expected menu items."
 - **Admin console (lines 133-148):** "I test the CMS backend login with default credentials to verify admin access works."
 
 #### 9. `performance/load-tests.ts` (10 min)
+
 - **k6 scenarios (lines 10-35):** "I define three load test scenarios: smoke test (5 users, 30s), average load (ramping to 20 users), and stress test (ramping to 50 users)."
 - **Thresholds (lines 36-39):** "I set performance thresholds: 95th percentile response time < 2000ms, error rate < 1%. If these are exceeded, the test fails."
 - **Batch requests (lines 41-52):** "In the smoke test, I use `http.batch()` to send multiple requests in parallel, simulating real user behavior."
 
 #### 10. `.github/workflows/ci.yml` (3 min)
+
 - "Runs on push to main and on every PR. Installs deps, Playwright browsers, runs all tests, and uploads the HTML report as an artifact."
 
 #### 11. Live Demo (10-15 min)
+
 - Run `npm test` to show all tests passing
 - Run `npm run test:a11y` to show accessibility tests with violation reports
 - Run `npm run test:cms` to show CMS content validation
@@ -77,23 +88,27 @@
 ### Performance Testing with k6
 
 **What is k6?**
+
 - Open-source load testing tool by Grafana
 - JavaScript/TypeScript scripts
 - Developer-friendly, CI/CD integration
 - Measures response times, throughput, error rates
 
 **Three Test Scenarios:**
+
 1. **Smoke Test:** Low load (5 VUs, 30s) - Verify baseline functionality
 2. **Average Load:** Ramping to 20 VUs - Typical usage patterns
 3. **Stress Test:** Ramping to 50 VUs - Find breaking point
 
 **Key Metrics:**
+
 - **Response Time:** p(95) < 2000ms, p(99) < 3000ms
 - **Error Rate:** < 1%
 - **Throughput:** Requests per second
 - **Virtual Users (VUs):** Simulated concurrent users
 
 **Thresholds:**
+
 ```typescript
 thresholds: {
   http_req_duration: ['p(95)<2000', 'p(99)<3000'],
@@ -102,6 +117,7 @@ thresholds: {
 ```
 
 **Interview Talking Points:**
+
 - "I use k6 because it's JavaScript-native and integrates with our existing TypeScript codebase"
 - "I test three scenarios: smoke for baseline, average for typical usage, stress to find limits"
 - "I set thresholds on response times and error rates to catch performance regressions in CI"
@@ -112,11 +128,13 @@ thresholds: {
 ### Accessibility Testing (WCAG 2.2 AA)
 
 **What is WCAG 2.2 AA?**
+
 - Web Content Accessibility Guidelines, version 2.2, level AA
 - International standard for web accessibility
 - Covers perceivable, operable, understandable, robust content
 
 **Automated Testing with axe-core:**
+
 ```typescript
 const results = await new AxeBuilder({ page })
   .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'])
@@ -124,6 +142,7 @@ const results = await new AxeBuilder({ page })
 ```
 
 **Common Violations Found:**
+
 1. **html-has-lang** (serious): Missing `lang` attribute on `<html>`
 2. **color-contrast** (serious): Insufficient contrast ratio
 3. **button-name** (critical): Buttons without discernible text
@@ -131,6 +150,7 @@ const results = await new AxeBuilder({ page })
 5. **list** (serious): Improper list structure
 
 **Manual Testing Checklist:**
+
 - [ ] Keyboard-only navigation (Tab, Shift+Tab, Enter, Space)
 - [ ] Screen reader testing (VoiceOver, NVDA, JAWS)
 - [ ] Color contrast validation (WebAIM Contrast Checker)
@@ -140,6 +160,7 @@ const results = await new AxeBuilder({ page })
 - [ ] Dynamic content announced to screen readers
 
 **Interview Talking Points:**
+
 - "I use axe-core integrated with Playwright for automated accessibility testing"
 - "I test at key user journey points: login, navigation, form interactions"
 - "I also do manual testing with keyboard-only navigation and VoiceOver"
@@ -151,12 +172,14 @@ const results = await new AxeBuilder({ page })
 ### CMS Testing (Contentful, ContentStack, DotCMS)
 
 **What is CMS Testing?**
+
 - Validating content managed through a CMS
 - Testing dynamic content delivery
 - Verifying content structure and schema
 - Testing admin workflows (create, edit, publish)
 
 **CMS Testing Strategy:**
+
 1. **Content Retrieval:** Verify content loads on frontend
 2. **Content Structure:** Validate expected fields (title, body, images)
 3. **Admin Workflows:** Test create/edit/publish in backend
@@ -164,11 +187,13 @@ const results = await new AxeBuilder({ page })
 5. **Dynamic Content:** Test templates, variables, personalization
 
 **DotCMS Demo Testing:**
+
 - **Frontend:** https://demo.dotcms.com (public content)
 - **Backend:** https://demo.dotcms.com/dotAdmin (admin console)
 - **Credentials:** admin@dotcms.com / admin
 
 **What I Test:**
+
 - Homepage loads with all dynamic sections (activities, products, events, blog)
 - Navigation contains CMS-driven menu items
 - Activity cards have images and links
@@ -178,6 +203,7 @@ const results = await new AxeBuilder({ page })
 - Admin console login works
 
 **Interview Talking Points:**
+
 - "I test CMS-driven content by validating that dynamic sections load correctly"
 - "I verify content structure: images have alt text, links have valid hrefs, forms have labels"
 - "I test both frontend content delivery and backend admin workflows"
@@ -190,41 +216,47 @@ const results = await new AxeBuilder({ page })
 ### Visual Regression Testing
 
 **What is Visual Regression Testing?**
+
 - Automated screenshot comparison to catch visual bugs
 - Detects layout shifts, styling issues, rendering problems
 - Complements functional tests (which validate structure, not appearance)
 - Critical for CMS-driven sites where content changes affect layout
 
 **How It Works:**
+
 1. **Baseline:** First run captures screenshot and saves as baseline
 2. **Comparison:** Subsequent runs compare against baseline
 3. **Detection:** Any visual difference beyond threshold fails the test
 4. **Review:** Developer reviews diff and updates baseline if change is intentional
 
 **Playwright Implementation:**
+
 ```typescript
 test('CMS homepage should match visual baseline', async ({ page }) => {
   await page.goto('/');
   await expect(page).toHaveScreenshot('cms-homepage.png', {
     fullPage: true,
-    maxDiffPixelRatio: 0.05,  // Allow 5% pixel difference
+    maxDiffPixelRatio: 0.05, // Allow 5% pixel difference
   });
 });
 ```
 
 **Configuration:**
+
 - **Viewport:** 1280x720 (standard desktop)
 - **Full page:** Captures entire scrollable page
 - **Threshold:** 5% pixel difference allowed (accounts for minor rendering variations)
 - **Baselines:** Stored in `tests/cms-visual.spec.ts-snapshots/` and committed to repo
 
 **What I Test:**
+
 - CMS homepage full-page rendering
 - Blog post page layout
 - Product listing page structure
 - Contact page form rendering
 
 **Interview Talking Points:**
+
 - "I use Playwright's built-in visual regression testing to catch visual bugs when CMS content changes"
 - "Visual tests complement functional tests - functional tests validate structure, visual tests validate appearance"
 - "Baselines are committed to the repo, so any visual change triggers a test failure for review"
@@ -389,39 +421,46 @@ test('CMS homepage should match visual baseline', async ({ page }) => {
 # Test Strategy: [Product/Feature Name]
 
 ## 1. Overview
+
 - Product/feature description
 - Key objectives
 - Scope (in/out)
 
 ## 2. Test Approach
+
 - Testing levels (unit, integration, E2E)
 - Testing types (functional, performance, accessibility, security)
 - Test environments
 - Test data strategy
 
 ## 3. Test Coverage
+
 - Critical user flows
 - Feature coverage matrix
 - Risk-based prioritization
 
 ## 4. Automation Strategy
+
 - Framework selection
 - Test architecture (POM, fixtures)
 - CI/CD integration
 - Test reporting
 
 ## 5. Quality Metrics
+
 - Test coverage %
 - Defect escape rate
 - Automation coverage %
 - Flaky test rate
 
 ## 6. Risks & Mitigation
+
 - Identified risks
 - Mitigation strategies
 - Contingency plans
 
 ## 7. Timeline & Resources
+
 - Test planning phase
 - Test development phase
 - Execution phase
@@ -479,6 +518,7 @@ npm run perf:all      # Run all k6 scenarios
 ## Part 8: Quick Reference - Key Concepts
 
 ### Playwright
+
 - **Auto-waiting:** Automatically waits for elements to be actionable
 - **Semantic locators:** `getByRole`, `getByPlaceholder`, `getByText`
 - **Page Object Model:** Separate UI logic from test logic
@@ -486,6 +526,7 @@ npm run perf:all      # Run all k6 scenarios
 - **Trace viewer:** Debug failed tests with DOM snapshots and network logs
 
 ### Accessibility (WCAG 2.2 AA)
+
 - **axe-core:** Automated accessibility testing library
 - **Keyboard navigation:** Tab, Shift+Tab, Enter, Space
 - **Screen readers:** VoiceOver (Mac), NVDA (Windows), JAWS (Windows)
@@ -493,12 +534,14 @@ npm run perf:all      # Run all k6 scenarios
 - **Alt text:** Descriptive text for images
 
 ### CMS Testing
+
 - **Content validation:** Verify dynamic content loads correctly
 - **Content structure:** Validate fields, images, links
 - **Admin workflows:** Test create, edit, publish
 - **Preview vs published:** Test content before going live
 
 ### Visual Regression Testing
+
 - **Screenshot comparison:** Catch visual bugs when content changes
 - **Baselines:** Committed to repo for version control
 - **Threshold:** 5% pixel difference allowed for minor rendering variations
@@ -507,6 +550,7 @@ npm run perf:all      # Run all k6 scenarios
 - **Content API:** Test GraphQL/REST endpoints
 
 ### Performance Testing (k6)
+
 - **Virtual Users (VUs):** Simulated concurrent users
 - **Scenarios:** Smoke, average load, stress test
 - **Thresholds:** Response time, error rate
