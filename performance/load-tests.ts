@@ -68,7 +68,10 @@ export function averageLoadTest() {
   const getPosts = http.get(`${BASE_URL}/posts`);
   check(getPosts, {
     'GET /posts - status 200': (r) => r.status === 200,
-    'GET /posts - has data': (r) => r.json().length > 0,
+    'GET /posts - has data': (r) => {
+      const body = r.json();
+      return Array.isArray(body) && body.length > 0;
+    },
     'GET /posts - response time < 2000ms': (r) => r.timings.duration < 2000,
   });
 
@@ -77,7 +80,15 @@ export function averageLoadTest() {
   const getSinglePost = http.get(`${BASE_URL}/posts/1`);
   check(getSinglePost, {
     'GET /posts/1 - status 200': (r) => r.status === 200,
-    'GET /posts/1 - has id': (r) => r.json().id === 1,
+    'GET /posts/1 - has id': (r) => {
+      const body = r.json();
+      return (
+        typeof body === 'object' &&
+        body !== null &&
+        'id' in body &&
+        (body as { id: number }).id === 1
+      );
+    },
   });
 
   sleep(1);
@@ -85,7 +96,10 @@ export function averageLoadTest() {
   const getUsers = http.get(`${BASE_URL}/users`);
   check(getUsers, {
     'GET /users - status 200': (r) => r.status === 200,
-    'GET /users - has data': (r) => r.json().length > 0,
+    'GET /users - has data': (r) => {
+      const body = r.json();
+      return Array.isArray(body) && body.length > 0;
+    },
   });
 
   sleep(2);
@@ -111,7 +125,10 @@ export function stressTest() {
   const createPost = http.post(`${BASE_URL}/posts`, postPayload, { headers });
   const postSuccess = check(createPost, {
     'POST /posts - status 201': (r) => r.status === 201,
-    'POST /posts - has id': (r) => r.json().id !== undefined,
+    'POST /posts - has id': (r) => {
+      const body = r.json() as { id?: number };
+      return body.id !== undefined;
+    },
   });
   errorRate.add(!postSuccess);
 
