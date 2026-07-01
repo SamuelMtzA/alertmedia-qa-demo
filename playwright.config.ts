@@ -44,8 +44,9 @@ export default defineConfig({
       use: {
         browserName: 'chromium',
         baseURL: 'https://demo.dotcms.com',
+        viewport: { width: 1280, height: 720 },
       },
-      testMatch: /cms\.spec\.ts/,
+      testMatch: /cms.*\.spec\.ts/,
     },
   ],
 });

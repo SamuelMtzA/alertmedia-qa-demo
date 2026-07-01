@@ -1,5 +1,5 @@
 {
-  "name": "alertmedia-qa-demo",
+  "name": "modern-qa-framework",
   "version": "1.0.0",
   "description": "QA automation framework for notification/alert management platform",
   "scripts": {

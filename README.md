@@ -1,4 +1,4 @@
-# AlertMedia QA Demo - Comprehensive Automation Framework
+# Modern QA Automation Framework
 
 ## Overview
 
@@ -10,6 +10,7 @@ A comprehensive QA automation framework demonstrating **UI testing**, **API test
 - **API Testing**: REST endpoint validation with CRUD operations
 - **Accessibility Testing**: WCAG 2.2 AA compliance with axe-core
 - **CMS Testing**: Content validation with DotCMS demo site
+- **Visual Regression Testing**: Screenshot comparison with Playwright (4 tests)
 - **Performance Testing**: Load testing with k6 (smoke, average, stress scenarios)
 - **Semantic Locators**: Using `getByRole`, `getByPlaceholder`, `getByText` for resilient tests
 - **TypeScript**: Type-safe code with interfaces
@@ -26,17 +27,18 @@ A comprehensive QA automation framework demonstrating **UI testing**, **API test
 ## Project Structure
 
 ```
-alertmedia-qa-demo/
+modern-qa-framework/
 ├── pages/
 │   ├── LoginPage.ts          # Login page object
 │   ├── DashboardPage.ts      # Dashboard page object
 │   ├── AdminPage.ts          # Admin panel page object
 │   └── ContentPage.ts        # CMS content page object
-├── tests/
+── tests/
 │   ├── ui.spec.ts            # UI tests (login, dashboard, admin)
 │   ├── api.spec.ts           # API tests (CRUD operations)
 │   ├── accessibility.spec.ts # Accessibility tests (WCAG 2.2 AA)
-│   └── cms.spec.ts           # CMS content validation tests
+│   ├── cms.spec.ts           # CMS content validation tests
+│   └── cms-visual.spec.ts    # Visual regression tests (CMS pages)
 ├── performance/
 │   └── load-tests.ts         # k6 load test scenarios
 ├── fixtures/
@@ -81,12 +83,12 @@ npm run perf:all
 
 ## Test Results
 
-**51+ tests passing** across 4 projects:
+**45+ tests passing** across 4 projects:
 
 - **UI**: 14 tests (Login: 5, Dashboard: 5, Admin: 4)
 - **API**: 12 tests (Users CRUD: 7, Posts: 5)
 - **Accessibility**: 5 tests (Keyboard navigation, alt text, WCAG scans, navigation, admin)
-- **CMS**: 10 tests (Content validation, navigation, forms, admin console)
+- **CMS**: 14 tests (Content validation: 10, Visual regression: 4)
 - **Performance**: 3 scenarios (Smoke, Average Load, Stress Test)
 
 ## Key Features Explained
@@ -152,6 +154,22 @@ const alt = await images.first().getAttribute('alt');
 expect(alt).toBeTruthy();
 ```
 
+### Visual Regression Testing
+
+Catch visual bugs when CMS content changes:
+
+```typescript
+test('CMS homepage should match visual baseline', async ({ page }) => {
+  await page.goto('/');
+  await expect(page).toHaveScreenshot('cms-homepage.png', {
+    fullPage: true,
+    maxDiffPixelRatio: 0.05,
+  });
+});
+```
+
+Baselines are stored in `tests/cms-visual.spec.ts-snapshots/` and committed to the repo. When CMS content changes, visual tests catch layout shifts, styling issues, and rendering problems that functional tests miss.
+
 ### Performance Testing
 
 Load testing with k6:
@@ -179,7 +197,8 @@ export const options = {
 5. **Accessibility** - WCAG 2.2 AA compliance with automated and manual testing
 6. **CMS Testing** - Validate dynamic content delivery and admin workflows
 7. **Performance** - k6 load testing with smoke, average, and stress scenarios
-8. **CI/CD** - Automated on PR, HTML reports, artifact preservation
+8. **Visual Testing** - Screenshot comparison to catch visual regressions
+9. **CI/CD** - Automated on PR, HTML reports, artifact preservation
 
 ## Study Guide
 
